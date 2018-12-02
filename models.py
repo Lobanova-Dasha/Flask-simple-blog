@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+from sqlalchemy.sql.functions import current_timestamp
 import re
 
 
@@ -8,11 +9,10 @@ def slugify(s):
     return re.sub(pattern, '-', s)
 
 
-
 post_tags = db.Table(
     'post_tags',
-    db.Column('post_id', db.Inreger, db.ForeignKey('post.id')),
-    db.Column('tag_id', db.Inreger, db.ForeignKey('tag.id'))
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
 
@@ -21,9 +21,7 @@ class Post(db.Model):
     title = db.Column(db.String(140))
     slug = db.Column(db.String(140), unique=True)
     body = db.Column(db.Text)
-    created = db.Column(db.DateTime, default=datetime.now())
-
-
+    created = db.Column(db.DateTime, default=current_timestamp())
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
@@ -44,19 +42,9 @@ class Tag(db.Model):
     name = db.Column(db.String(100))
     slug = db.Column(db.String(100))
 
-    def __init(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(Tag, self).__init__(*args, **kwargs)
-        self.slug = slugify(self.name)
+        self.slug = slugify(self.name) if self.name else 'some_slug'
 
     def __repr__(self):
         return '<Tag id: {}, name: {}>'.format(self.id, self.name)
-
-
-
-
-
-
-
-
-
-
